@@ -5,3 +5,5 @@ spring:
 jwt:
   secret: "ThisIsASecretKeyForJwtSignatureMustBeLongEnough123456"
   expiration: 86400000
+server:
+  port: 8082
