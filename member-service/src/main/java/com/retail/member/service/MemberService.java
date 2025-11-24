@@ -2,6 +2,7 @@ package com.retail.member.service;
 
 import com.retail.common.exception.CustomException;
 import com.retail.common.exception.ErrorCode;
+import com.retail.member.dto.MemberResponseDto;
 import com.retail.member.dto.SignupRequest;
 import com.retail.member.entity.Address;
 import com.retail.member.entity.Member;
@@ -20,7 +21,7 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public Member signup(SignupRequest request) {
+  public MemberResponseDto signup(SignupRequest request) {
     if (memberRepository.existsByEmail(request.getEmail())) {
       throw new CustomException(ErrorCode.INVALID_REQUEST);
     }
@@ -37,6 +38,11 @@ public class MemberService {
         .role(Role.ROLE_USER)
         .build();
 
-    return memberRepository.save(member);
+    return MemberResponseDto.from(memberRepository.save(member));
+  }
+
+  public MemberResponseDto findByEmail(String email) {
+    return MemberResponseDto.from(memberRepository.findByEmail(email)
+        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND)));
   }
 }
