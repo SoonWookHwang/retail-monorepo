@@ -2,6 +2,7 @@ package com.retail.member.controller;
 
 import com.retail.common.dto.ApiResponse;
 import com.retail.member.dto.LoginRequest;
+import com.retail.member.dto.MemberResponseDto;
 import com.retail.member.dto.SignupRequest;
 import com.retail.member.dto.TokenResponse;
 import com.retail.member.entity.Member;
@@ -21,9 +22,8 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/signup")
-  public ResponseEntity<ApiResponse<Member>> signup(@RequestBody @Valid SignupRequest request) {
-    Member saved = memberService.signup(request);
-    return ResponseEntity.ok(ApiResponse.ok(saved));
+  public ResponseEntity<ApiResponse<MemberResponseDto>> signup(@RequestBody @Valid SignupRequest request) {
+    return ResponseEntity.ok(ApiResponse.ok(memberService.signup(request)));
   }
 
   @PostMapping("/login")
