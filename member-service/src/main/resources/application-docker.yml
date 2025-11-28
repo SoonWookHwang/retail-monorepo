@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: member-service
+  datasource:
+    url: jdbc:mysql://mysql:3306/retail_member?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+  config:
+    import: optional:classpath:/application-common.yml
+server:
+  port: 8081
+jwt:
+  secret: my-super-secret-key-for-retail-monorepo
+  expiration: 3600000
