@@ -1,20 +1,29 @@
 package com.retail.common.exception;
 
-import org.springframework.http.HttpStatus;
-
 public enum ErrorCode {
-  INVALID_REQUEST(HttpStatus.BAD_REQUEST, "Invalid request"),
-  NOT_FOUND(HttpStatus.NOT_FOUND, "Resource not found"),
-  INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+  INVALID_REQUEST(400, "BAD_REQUEST", "Invalid request"),
+  NOT_FOUND(404, "NOT_FOUND", "Resource not found"),
+  INTERNAL_ERROR(500, "INTERNAL_SERVER_ERROR", "Internal server error");
 
-  private final HttpStatus status;
+  private final int statusCode;
+  private final String statusName;
   private final String message;
 
-  ErrorCode(HttpStatus status, String message) {
-    this.status = status;
+  ErrorCode(int statusCode, String statusName, String message) {
+    this.statusCode = statusCode;
+    this.statusName = statusName;
     this.message = message;
   }
 
-  public HttpStatus getStatus() { return status; }
-  public String getMessage() { return message; }
+  public int getStatusCode() {
+    return statusCode;
+  }
+
+  public String getStatusName() {
+    return statusName;
+  }
+
+  public String getMessage() {
+    return message;
+  }
 }
