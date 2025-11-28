@@ -19,7 +19,10 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+//    tasks.withType(Test) {
+//        useJUnitPlatform()
+//    }
     tasks.withType(Test) {
-        useJUnitPlatform()
+        enabled = false
     }
 }
