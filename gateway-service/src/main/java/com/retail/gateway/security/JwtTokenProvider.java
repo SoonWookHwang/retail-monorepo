@@ -1,7 +1,9 @@
-package com.retail.common.security;
+package com.retail.gateway.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import java.util.Collections;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,11 +14,11 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
   @Value("${jwt.secret}")
   private String secretKey;
-
   @Value("${jwt.expiration}")
   private long validityInMilliseconds;
 
@@ -24,28 +26,24 @@ public class JwtTokenProvider {
     return Keys.hmacShaKeyFor(secretKey.getBytes());
   }
 
-  public String generateToken(Authentication authentication) {
+  public String generateToken(String username) {
     Date now = new Date();
-    Date validity = new Date(now.getTime() + validityInMilliseconds);
-
+    Date expiry = new Date(now.getTime() + validityInMilliseconds);
     return Jwts.builder()
-        .setSubject(authentication.getName())
+        .setSubject(username)
         .setIssuedAt(now)
-        .setExpiration(validity)
+        .setExpiration(expiry)
         .signWith(getSigningKey(), SignatureAlgorithm.HS256)
         .compact();
   }
 
-  public Authentication getAuthentication(String token) {
-    String email = Jwts.parserBuilder()
+  public String getUsername(String token) {
+    return Jwts.parserBuilder()
         .setSigningKey(getSigningKey())
         .build()
         .parseClaimsJws(token)
         .getBody()
         .getSubject();
-
-    User principal = new User(email, "", java.util.Collections.emptyList());
-    return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
   }
 
   public boolean validateToken(String token) {
@@ -55,5 +53,11 @@ public class JwtTokenProvider {
     } catch (JwtException | IllegalArgumentException e) {
       return false;
     }
+  }
+
+  public Authentication getAuthentication(String token) {
+    String username = getUsername(token);
+    User principal = new User(username, "", Collections.emptyList());
+    return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
   }
 }
