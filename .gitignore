@@ -33,3 +33,6 @@ logs/
 
 ### Environment ###
 .env
+
+### db data ###
+docker/data/
