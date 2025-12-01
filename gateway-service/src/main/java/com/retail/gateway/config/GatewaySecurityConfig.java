@@ -41,9 +41,8 @@ public class GatewaySecurityConfig {
             .pathMatchers("/auth/**", "/eureka/**", "/actuator/**").permitAll()
             .pathMatchers("/api/members/signup", "/api/members/login").permitAll()
 
-            // ★ ROLE 기반 인가 예시
-            .pathMatchers("/api/admin/**").hasRole("ADMIN")
-            .pathMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+            .pathMatchers("/api/products/admin/**").hasRole("ADMIN")
+            .pathMatchers("/api/products/**").permitAll()
 
             .anyExchange().authenticated()
         )
