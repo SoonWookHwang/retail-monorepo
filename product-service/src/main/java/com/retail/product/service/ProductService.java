@@ -1,68 +1,68 @@
 package com.retail.product.service;
 
-import com.retail.product.dto.ProductRequest;
 import com.retail.product.dto.ProductResponse;
-import com.retail.product.entity.*;
-import com.retail.product.repository.*;
-import jakarta.transaction.Transactional;
+import com.retail.product.entity.ProductLike;
+import com.retail.product.exception.ProductErrorCode;
+import com.retail.product.exception.ProductException;
+import com.retail.product.repository.ProductLikeRepository;
+import com.retail.product.repository.ProductRepository;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ProductService {
 
   private final ProductRepository productRepository;
-  private final BrandRepository brandRepository;
-  private final CategoryRepository categoryRepository;
+  private final ProductLikeRepository productLikeRepository;
 
-  public ProductResponse create(ProductRequest request) {
-    Brand brand = brandRepository.findById(request.getBrandId())
-        .orElseThrow(() -> new IllegalArgumentException("Invalid brand id"));
-    Category category = categoryRepository.findById(request.getCategoryId())
-        .orElseThrow(() -> new IllegalArgumentException("Invalid category id"));
+  @Transactional(readOnly = true)
+  public List<ProductResponse> findAll(Long userId) {
 
-    Product product = Product.builder()
-        .name(request.getName())
-        .price(request.getPrice())
-        .description(request.getDescription())
-        .brand(brand)
-        .category(category)
-        .build();
-
-    ProductStock stock = ProductStock.builder()
-        .quantity(request.getStockQuantity())
-        .build();
-
-    product.setStock(stock);
-
-    request.getImageUrls().forEach(url ->
-        product.addImage(ProductImage.builder()
-            .imageUrl(url)
-            .isMain(false)
-            .build())
-    );
-
-    Product saved = productRepository.save(product);
-    return ProductResponse.from(saved);
-  }
-
-  public List<ProductResponse> findAll() {
-    return productRepository.findAllWithBrandAndCategory().stream()
+    var products = productRepository.findAllWithBrandAndCategory()
+        .stream()
         .map(ProductResponse::from)
         .collect(Collectors.toList());
+
+    return mergeLikeStatus(products, userId);
   }
 
-  public ProductResponse findById(Long id) {
-    return productRepository.findById(id)
-        .map(ProductResponse::from)
-        .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+  @Transactional(readOnly = true)
+  public ProductResponse findById(Long productId, Long userId) {
+    var product = productRepository.findById(productId)
+        .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
+    if (userId == null) {
+      return ProductResponse.from(product, false);
+    }
+    boolean liked = productLikeRepository.existsByUserIdAndProductId(userId, productId);
+    return ProductResponse.from(product, liked);
   }
 
-  public void delete(Long id) {
-    productRepository.deleteById(id);
+
+  public List<ProductResponse> mergeLikeStatus(List<ProductResponse> products, Long userId) {
+
+    if (userId == null) {
+      products.forEach(p -> p.setLiked(false));
+      return products;
+    }
+
+    List<Long> productIds = products.stream()
+        .map(ProductResponse::getId)
+        .toList();
+
+    Set<Long> likedIds = productLikeRepository
+        .findByUserIdAndProductIdIn(userId, productIds)
+        .stream()
+        .map(ProductLike::getProductId)
+        .collect(Collectors.toSet());
+
+    products.forEach(p -> p.setLiked(likedIds.contains(p.getId())));
+
+    return products;
   }
+
 }
