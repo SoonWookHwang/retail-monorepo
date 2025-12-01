@@ -1,5 +1,6 @@
 package com.retail.common.dto;
 
+import com.retail.common.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,11 @@ public class ApiResponse<T> {
     return new ApiResponse<>(true, data);
   }
 
-  public static <T> ApiResponse<T> fail(T data) {
-    return new ApiResponse<>(false, data);
+  public static ApiResponse<ErrorResponse> fail(ErrorCode errorCode) {
+    return new ApiResponse<>(
+        false,
+        ErrorResponse.from(errorCode)
+    );
   }
+
 }
