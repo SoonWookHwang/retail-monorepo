@@ -3,6 +3,7 @@ package com.retail.common.exception;
 public enum ErrorCode {
   INVALID_REQUEST(400, "BAD_REQUEST", "Invalid request"),
   NOT_FOUND(404, "NOT_FOUND", "Resource not found"),
+  CONFLICT(409, "CONFLICT", "Conflict"),
   INTERNAL_ERROR(500, "INTERNAL_SERVER_ERROR", "Internal server error");
 
   private final int statusCode;

@@ -1,17 +1,13 @@
 package com.retail.member.security;
 
-import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
-import java.util.Collections;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,6 +16,7 @@ public class JwtTokenProvider {
 
   @Value("${jwt.secret}")
   private String secretKey;
+
   @Value("${jwt.expiration}")
   private long validityInMilliseconds;
 
@@ -27,36 +24,25 @@ public class JwtTokenProvider {
     return Keys.hmacShaKeyFor(secretKey.getBytes());
   }
 
-  public String generateToken(Authentication authentication) {
+  public String generateToken(Long userId, String email, String role) {
     Date now = new Date();
-    Date validity = new Date(now.getTime() + validityInMilliseconds);
+    Date expiry = new Date(now.getTime() + validityInMilliseconds);
 
     return Jwts.builder()
-        .setSubject(authentication.getName())
+        .setSubject(email)
+        .claim("userId", userId)
+        .claim("role", role)
         .setIssuedAt(now)
-        .setExpiration(validity)
+        .setExpiration(expiry)
         .signWith(getSigningKey(), SignatureAlgorithm.HS256)
         .compact();
   }
 
-  public Authentication getAuthentication(String token) {
-    String email = Jwts.parserBuilder()
+  public Claims parseClaims(String token) {
+    return Jwts.parserBuilder()
         .setSigningKey(getSigningKey())
         .build()
         .parseClaimsJws(token)
-        .getBody()
-        .getSubject();
-
-    User principal = new User(email, "", Collections.emptyList());
-    return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
-  }
-
-  public boolean validateToken(String token) {
-    try {
-      Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
-      return true;
-    } catch (JwtException | IllegalArgumentException e) {
-      return false;
-    }
+        .getBody();
   }
 }

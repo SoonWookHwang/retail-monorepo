@@ -26,10 +26,13 @@ public class GatewaySecurityConfig {
 
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+
     AuthenticationWebFilter jwtFilter = new AuthenticationWebFilter(authenticationManager);
     jwtFilter.setServerAuthenticationConverter(authenticationConverter);
     jwtFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/api/**"));
-    jwtFilter.setAuthenticationFailureHandler(new ServerAuthenticationEntryPointFailureHandler(authenticationEntryPoint));
+    jwtFilter.setAuthenticationFailureHandler(
+        new ServerAuthenticationEntryPointFailureHandler(authenticationEntryPoint)
+    );
 
     http
         .csrf(ServerHttpSecurity.CsrfSpec::disable)
@@ -37,6 +40,11 @@ public class GatewaySecurityConfig {
         .authorizeExchange(ex -> ex
             .pathMatchers("/auth/**", "/eureka/**", "/actuator/**").permitAll()
             .pathMatchers("/api/members/signup", "/api/members/login").permitAll()
+
+            // ★ ROLE 기반 인가 예시
+            .pathMatchers("/api/admin/**").hasRole("ADMIN")
+            .pathMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+
             .anyExchange().authenticated()
         )
         .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION);
@@ -44,3 +52,4 @@ public class GatewaySecurityConfig {
     return http.build();
   }
 }
+

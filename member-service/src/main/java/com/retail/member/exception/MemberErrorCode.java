@@ -5,7 +5,12 @@ import com.retail.common.exception.ErrorCode;
 public enum MemberErrorCode {
 
   MEMBER_NOT_FOUND("MEMBER_001", ErrorCode.NOT_FOUND, "Member not found"),
-  DUPLICATE_EMAIL("MEMBER_002", ErrorCode.INVALID_REQUEST, "Email already exists");
+
+  LOGIN_FAILED("MEMBER_002", ErrorCode.INVALID_REQUEST,
+      "Invalid email or password"),
+
+  DUPLICATE_EMAIL("MEMBER_003", ErrorCode.CONFLICT,
+      "Email already exists");
 
   private final String code;
   private final ErrorCode base;
