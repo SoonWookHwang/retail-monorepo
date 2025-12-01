@@ -22,5 +22,11 @@ public class ApiResponse<T> {
         ErrorResponse.from(errorCode)
     );
   }
+  public static ApiResponse<ErrorResponse> fail(ErrorCode errorCode, String domainCode) {
+    return new ApiResponse<>(
+        false,
+        ErrorResponse.from(errorCode, domainCode)
+    );
+  }
 
 }

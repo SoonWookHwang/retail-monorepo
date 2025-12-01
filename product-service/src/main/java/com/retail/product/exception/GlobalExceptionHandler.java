@@ -20,6 +20,16 @@ public class GlobalExceptionHandler {
         .body(ApiResponse.fail(errorCode));
   }
 
+  @ExceptionHandler(ProductException.class)
+  public ResponseEntity<ApiResponse<?>> handleProductException(ProductException ex) {
+
+    ErrorCode baseError = ex.getErrorCode().getBase();
+    String domainCode = ex.getErrorCode().getCode();
+
+    return ResponseEntity
+        .status(ErrorCodeUtils.toHttpStatus(baseError))
+        .body(ApiResponse.fail(baseError, domainCode));
+  }
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiResponse<?>> handleGeneralException(Exception ex) {
 
