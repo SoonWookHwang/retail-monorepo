@@ -6,7 +6,9 @@ public enum ProductErrorCode {
 
   PRODUCT_NOT_FOUND("PRODUCT_001", ErrorCode.NOT_FOUND, "Product not found"),
   INVALID_PRODUCT_STATUS("PRODUCT_002", ErrorCode.INVALID_REQUEST, "Invalid product status"),
-  OUT_OF_STOCK("PRODUCT_003", ErrorCode.INVALID_REQUEST, "Product out of stock");
+  OUT_OF_STOCK("PRODUCT_003", ErrorCode.INVALID_REQUEST, "Product out of stock"),
+  INVALID_BRAND("PRODUCT_004",ErrorCode.INVALID_REQUEST,"Invalid brand id"),
+  INVALID_CATEGORY("PRODUCT_005",ErrorCode.INVALID_REQUEST,"Invalid category id");
 
   private final String code;
   private final ErrorCode base;
