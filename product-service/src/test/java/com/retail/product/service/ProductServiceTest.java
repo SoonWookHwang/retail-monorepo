@@ -22,6 +22,9 @@ class ProductServiceTest {
 
   @Autowired
   private ProductService productService;
+
+  @Autowired
+  private ProductAdminService productAdminService;
   @Autowired
   private BrandRepository brandRepository;
   @Autowired
@@ -49,7 +52,7 @@ class ProductServiceTest {
         .imageUrls(List.of("https://example.com/tv-front.jpg"))
         .build();
 
-    ProductResponse res = productService.create(req);
+    ProductResponse res = productAdminService.create(req);
 
     System.out.println("=== Created Product ===");
     System.out.println("ID: " + res.getId());
@@ -72,7 +75,7 @@ class ProductServiceTest {
     Long brandId = brandRepository.save(Brand.builder().name("LG").build()).getId();
     Long categoryId = categoryRepository.save(Category.builder().name("Monitor").build()).getId();
 
-    productService.create(ProductRequest.builder()
+    productAdminService.create(ProductRequest.builder()
         .name("UltraFine 5K")
         .price(1800000)
         .description("5K Retina Display Monitor")
@@ -84,7 +87,7 @@ class ProductServiceTest {
     );
 
     // when
-    List<ProductResponse> list = productService.findAll();
+    List<ProductResponse> list = productService.findAll(1L);
 
     // then
     System.out.println("=== All Products ===");

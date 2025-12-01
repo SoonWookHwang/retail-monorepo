@@ -22,8 +22,15 @@ public class ProductResponse {
   private int stockQuantity;
   private List<String> imageUrls;
   private List<String> reviewComments;
+  private boolean liked; // ★ 추가
 
+  // 기존 from(Product) -> liked = false (기본 값)
   public static ProductResponse from(Product product) {
+    return from(product, false);
+  }
+
+  // 좋아요 여부 포함하는 새로운 from 메서드
+  public static ProductResponse from(Product product, boolean liked) {
     return ProductResponse.builder()
         .id(product.getId())
         .name(product.getName())
@@ -38,6 +45,7 @@ public class ProductResponse {
         .reviewComments(product.getReviews() != null
             ? product.getReviews().stream().map(Review::getComment).collect(Collectors.toList())
             : List.of())
+        .liked(liked)
         .build();
   }
 }

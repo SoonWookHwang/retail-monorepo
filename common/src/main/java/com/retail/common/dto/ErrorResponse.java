@@ -14,7 +14,6 @@ public class ErrorResponse {
   private String statusName;
   private String message;
 
-  // 새로 추가
   private String domainCode;
 
   public static ErrorResponse from(ErrorCode errorCode) {
