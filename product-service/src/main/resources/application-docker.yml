@@ -15,5 +15,10 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
+
+  elasticsearch:
+    uris: http://elasticsearch:9200
+    connection-timeout: 5000
+    socket-timeout: 60000
 server:
   port: 8082
