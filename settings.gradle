@@ -4,9 +4,6 @@ include 'common'
 include 'product-service'
 //include 'order-service'
 //include 'payment-service'
-//include 'inventory-service'
 //include 'recommendation-service'
 include 'member-service'
 include 'gateway-service'
-
-//project(':gateway-service').projectDir = file('gateway-service')
