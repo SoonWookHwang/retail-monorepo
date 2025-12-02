@@ -16,9 +16,8 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
 
-  elasticsearch:
-    uris: http://elasticsearch:9200
-    connection-timeout: 5000
-    socket-timeout: 60000
+elasticsearch:
+  uris: http://elasticsearch:9200
+
 server:
   port: 8082

@@ -2,18 +2,19 @@ package com.retail.product.document;
 
 import com.retail.product.entity.Product;
 import com.retail.product.entity.ProductImage;
-import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(indexName = "products")
 public class ProductDocument {
 
   @Id
