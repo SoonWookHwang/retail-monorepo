@@ -1,4 +1,5 @@
-version: '3.8'
+#version: '3.8'
+version: '2.4'
 
 services:
   mysql:
@@ -6,6 +7,8 @@ services:
     container_name: retail-mono-mysql
     environment:
       MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_INNODB_BUFFER_POOL_SIZE: 128M  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 512m   # MySQL 메모리 제한 - 로컬 테스트환경 최적화
     ports:
       - '3307:3306'
     volumes:
@@ -19,11 +22,14 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
     container_name: retail-elasticsearch
+
     environment:
       - discovery.type=single-node
       - cluster.name=retail-es-cluster
       - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+#      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - ES_JAVA_OPTS=-Xms256m -Xmx256m  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
     ports:
       - "9200:9200"
     volumes:
@@ -32,16 +38,21 @@ services:
       memlock:
         soft: -1
         hard: -1
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.13.0
-    container_name: retail-kibana
-    depends_on:
-      - elasticsearch
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+## 메모리, cpu 사양 부족으로 임시 주석 처리
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:8.13.0
+#    container_name: retail-kibana
+#    depends_on:
+#      - elasticsearch
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    ports:
+#      - "5601:5601"
   member-service:
     build:
       context: ./member-service
@@ -54,6 +65,8 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JAVA_OPTS: "-Xms128m -Xmx256m"  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
     ports:
       - "8081:8081"
 
@@ -65,13 +78,15 @@ services:
       mysql:
         condition: service_healthy
       elasticsearch:
-        condition: service_started
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/retail_product?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+      JAVA_OPTS: "-Xms128m -Xmx256m"  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
     ports:
       - "8082:8082"
 
@@ -82,5 +97,8 @@ services:
     depends_on:
       - member-service
       - product-service
+    environment:
+      JAVA_OPTS: "-Xms128m -Xmx256m"  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
     ports:
       - "8080:8080"
