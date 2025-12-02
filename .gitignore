@@ -36,3 +36,4 @@ logs/
 
 ### db data ###
 docker/data/
+docker/elasticsearch/data/
