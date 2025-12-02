@@ -1,5 +1,6 @@
 package com.retail.product.service;
 
+import com.retail.product.document.ProductDocument;
 import com.retail.product.dto.ProductRequest;
 import com.retail.product.dto.ProductResponse;
 import com.retail.product.entity.Brand;
@@ -23,6 +24,8 @@ public class ProductAdminService {
   private final ProductRepository productRepository;
   private final BrandRepository brandRepository;
   private final CategoryRepository categoryRepository;
+
+  private final ProductSearchService productSearchService;
 
   @Transactional
   public ProductResponse create(ProductRequest request) {
@@ -53,6 +56,9 @@ public class ProductAdminService {
     );
 
     Product saved = productRepository.save(product);
+    productSearchService.index(
+        ProductDocument.fromEntity(saved, 0)
+    );
     return ProductResponse.from(saved);
   }
 
