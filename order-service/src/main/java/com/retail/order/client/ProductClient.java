@@ -1,18 +1,33 @@
 package com.retail.order.client;
 
 import com.retail.order.dto.product.ProductInfoResponse;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 
-@FeignClient(name = "product-service", url = "${service.product.url}")
-public interface ProductClient {
+@Component
+@RequiredArgsConstructor
+public class ProductClient {
 
-  @GetMapping("/internal/products/{id}")
-  ProductInfoResponse getProductInfo(@PathVariable Long id);
+  private final WebClient productWebClient;
 
-  @PostMapping("/internal/products/{id}/decrease-stock")
-  void decreaseStock(@PathVariable Long id, @RequestParam int quantity);
+  public ProductInfoResponse getProductInfo(Long id) {
+    return productWebClient.get()
+        .uri("/internal/products/{id}", id)
+        .retrieve()
+        .bodyToMono(ProductInfoResponse.class)
+        .block(); // 동기 방식
+  }
+
+  public void decreaseStock(Long id, int quantity) {
+    productWebClient.post()
+        .uri(uriBuilder -> uriBuilder
+            .path("/internal/products/{id}/decrease-stock")
+            .queryParam("quantity", quantity)
+            .build(id)
+        )
+        .retrieve()
+        .toBodilessEntity()
+        .block();
+  }
 }
