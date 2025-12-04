@@ -13,6 +13,7 @@ public class ProductStock {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Setter
   private int quantity;
 
   @OneToOne(fetch = FetchType.LAZY)

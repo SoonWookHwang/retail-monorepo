@@ -8,7 +8,9 @@ public enum ProductErrorCode {
   INVALID_PRODUCT_STATUS("PRODUCT_002", ErrorCode.INVALID_REQUEST, "Invalid product status"),
   OUT_OF_STOCK("PRODUCT_003", ErrorCode.INVALID_REQUEST, "Product out of stock"),
   INVALID_BRAND("PRODUCT_004",ErrorCode.INVALID_REQUEST,"Invalid brand id"),
-  INVALID_CATEGORY("PRODUCT_005",ErrorCode.INVALID_REQUEST,"Invalid category id");
+  INVALID_CATEGORY("PRODUCT_005",ErrorCode.INVALID_REQUEST,"Invalid category id"),
+  STOCK_NOT_FOUND("PRODUCT_006", ErrorCode.NOT_FOUND, "Stock not found");
+
 
   private final String code;
   private final ErrorCode base;
@@ -30,5 +32,9 @@ public enum ProductErrorCode {
 
   public String getMessage() {
     return message;
+  }
+
+  public ProductException toException() {
+    return new ProductException(this);
   }
 }

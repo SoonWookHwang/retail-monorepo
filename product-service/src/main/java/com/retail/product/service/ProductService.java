@@ -3,7 +3,6 @@ package com.retail.product.service;
 import com.retail.product.dto.ProductResponse;
 import com.retail.product.entity.ProductLike;
 import com.retail.product.exception.ProductErrorCode;
-import com.retail.product.exception.ProductException;
 import com.retail.product.repository.ProductLikeRepository;
 import com.retail.product.repository.ProductRepository;
 import java.util.List;
@@ -34,7 +33,7 @@ public class ProductService {
   @Transactional(readOnly = true)
   public ProductResponse findById(Long productId, Long userId) {
     var product = productRepository.findById(productId)
-        .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        .orElseThrow(ProductErrorCode.PRODUCT_NOT_FOUND::toException);
     if (userId == null) {
       return ProductResponse.from(product, false);
     }

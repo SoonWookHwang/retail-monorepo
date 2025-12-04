@@ -18,25 +18,13 @@ repositories {
 	mavenCentral()
 }
 
-ext {
-	set('springCloudVersion', "2023.0.3")
-}
-
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
-}
-
 dependencies {
 	implementation project(':common')
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-
-	// 로깅 관련 (Feign 디버깅할 때 유용)
-	implementation 'io.github.openfeign:feign-httpclient'
+	// WebClient만 사용하기 위한 최소 의존성
+	implementation 'org.springframework:spring-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-reactor-netty'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

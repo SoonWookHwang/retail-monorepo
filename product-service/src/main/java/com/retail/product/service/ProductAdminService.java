@@ -9,7 +9,6 @@ import com.retail.product.entity.Product;
 import com.retail.product.entity.ProductImage;
 import com.retail.product.entity.ProductStock;
 import com.retail.product.exception.ProductErrorCode;
-import com.retail.product.exception.ProductException;
 import com.retail.product.repository.BrandRepository;
 import com.retail.product.repository.CategoryRepository;
 import com.retail.product.repository.ProductRepository;
@@ -30,9 +29,9 @@ public class ProductAdminService {
   @Transactional
   public ProductResponse create(ProductRequest request) {
     Brand brand = brandRepository.findById(request.getBrandId())
-        .orElseThrow(() -> new ProductException(ProductErrorCode.INVALID_BRAND));
+        .orElseThrow(ProductErrorCode.INVALID_BRAND::toException);
     Category category = categoryRepository.findById(request.getCategoryId())
-        .orElseThrow(() -> new ProductException(ProductErrorCode.INVALID_CATEGORY));
+        .orElseThrow(ProductErrorCode.INVALID_CATEGORY::toException);
 
     Product product = Product.builder()
         .name(request.getName())
@@ -65,7 +64,7 @@ public class ProductAdminService {
   @Transactional
   public void delete(Long id) {
     Product product = productRepository.findById(id)
-        .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        .orElseThrow(ProductErrorCode.PRODUCT_NOT_FOUND::toException);
 
     productRepository.delete(product);
   }
