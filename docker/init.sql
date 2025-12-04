@@ -1,5 +1,4 @@
 CREATE DATABASE IF NOT EXISTS retail_member CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE DATABASE IF NOT EXISTS retail_product CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE DATABASE IF NOT EXISTS retail_order CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE DATABASE IF NOT EXISTS retail_inventory CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE DATABASE IF NOT EXISTS retail_payment CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

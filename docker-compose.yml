@@ -87,8 +87,34 @@ services:
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
       JAVA_OPTS: "-Xms128m -Xmx256m"  # 메모리 절감 - 로컬 테스트환경 최적화
     mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
     ports:
       - "8082:8082"
+
+
+  order-service:
+    build:
+      context: ./order-service
+    container_name: retail-order
+    depends_on:
+      product-service:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/retail_order?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SERVICE_PRODUCT_URL: http://product-service:8082
+      JAVA_OPTS: "-Xms128m -Xmx256m"  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
+    ports:
+      - "8083:8083"
 
   gateway-service:
     build:

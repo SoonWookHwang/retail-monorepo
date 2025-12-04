@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: order-service
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 5000
+            readTimeout: 5000
+            loggerLevel: BASIC
+server:
+  port: 8083

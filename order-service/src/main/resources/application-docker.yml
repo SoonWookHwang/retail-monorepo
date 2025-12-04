@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:mysql://mysql:3306/retail_order?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: 1234
+
+service:
+  product:
+    url: ${SERVICE_PRODUCT_URL}
+
+logging:
+  level:
+    com.retail.order: INFO
