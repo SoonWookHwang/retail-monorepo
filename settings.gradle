@@ -2,7 +2,7 @@ rootProject.name = 'retail-monorepo'
 
 include 'common'
 include 'product-service'
-//include 'order-service'
+include 'order-service'
 //include 'payment-service'
 //include 'recommendation-service'
 include 'member-service'

@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3307/retail_order?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: 1234
+
+service:
+  product:
+    url: http://localhost:8082
+
+logging:
+  level:
+    com.retail.order: DEBUG
+    org.springframework.cloud.openfeign: DEBUG

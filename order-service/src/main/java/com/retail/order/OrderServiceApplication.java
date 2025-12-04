@@ -2,8 +2,13 @@ package com.retail.order;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+		"com.retail.order",
+		"com.retail.common"
+})
+@EnableFeignClients(basePackages = "com.retail.order.client")
 public class OrderServiceApplication {
 
 	public static void main(String[] args) {
