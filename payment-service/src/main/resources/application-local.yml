@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: payment-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/retail_payment?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+
+server:
+  port: 8084
+
+toss:
+  api-url: https://api.tosspayments.com/v1/payments
+  success-url: http://localhost:3000/payments/success
+  fail-url: http://localhost:3000/payments/fail
