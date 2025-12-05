@@ -1,0 +1,7 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: payment-service
+toss:
+  secret-key: ${TOSS_SECRET_KEY}
