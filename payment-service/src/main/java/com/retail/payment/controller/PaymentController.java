@@ -19,11 +19,6 @@ public class PaymentController {
 
   private final PaymentService paymentService;
 
-  @PostMapping("/request")
-  public PaymentResponse requestPayment(@CurrentUser Long userId,@RequestBody PaymentRequest req) {
-    return paymentService.requestPayment(userId,req);
-  }
-
   @GetMapping("/confirm")
   public PaymentResponse confirmPayment(
       @RequestParam String paymentKey,
