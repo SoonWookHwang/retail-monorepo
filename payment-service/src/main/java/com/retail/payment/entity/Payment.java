@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,8 +24,8 @@ public class Payment extends BaseEntity {
 
   private Long userId;
 
-  @Column(nullable = false)
-  private String orderId;
+  @Column(columnDefinition = "BINARY(16)", nullable = false)
+  private UUID orderId;
   @Column(nullable = false)
   private int amount;
 
@@ -34,7 +35,7 @@ public class Payment extends BaseEntity {
   private String paymentKey;
 
   @Builder
-  public Payment(Long userId, String orderId, int amount, PaymentStatus status, String paymentKey) {
+  public Payment(Long userId, UUID orderId, int amount, PaymentStatus status, String paymentKey) {
     this.userId = userId;
     this.orderId = orderId;
     this.amount = amount;
@@ -50,6 +51,7 @@ public class Payment extends BaseEntity {
   public void fail() {
     this.status = PaymentStatus.FAILED;
   }
+
 }
 
 

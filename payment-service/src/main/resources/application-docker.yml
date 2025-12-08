@@ -17,6 +17,9 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
 
+  kafka:
+    bootstrap-servers: kafka:9092
+
 server:
   port: 8084
 
