@@ -31,7 +31,7 @@ public class OrderItem {
   private int quantity;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_id")
+  @JoinColumn(name = "order_id", columnDefinition = "BINARY(16)")
   private Order order;
 
   public void setOrder(Order order) {

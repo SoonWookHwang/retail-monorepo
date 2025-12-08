@@ -3,6 +3,9 @@ spring:
     url: jdbc:mysql://mysql:3306/retail_order?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: 1234
+  kafka:
+    bootstrap-servers: kafka:9092
+
 
 service:
   product:

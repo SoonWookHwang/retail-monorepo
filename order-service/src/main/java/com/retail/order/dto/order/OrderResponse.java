@@ -3,9 +3,10 @@ package com.retail.order.dto.order;
 import com.retail.order.entity.Order;
 import com.retail.order.entity.OrderStatus;
 import java.util.List;
+import java.util.UUID;
 
 public record OrderResponse(
-    Long orderId,
+    UUID orderId,
     Long userId,
     int totalAmount,
     OrderStatus status,
