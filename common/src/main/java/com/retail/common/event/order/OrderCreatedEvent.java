@@ -1,4 +1,4 @@
-package com.retail.common.events;
+package com.retail.common.event.order;
 
 import java.util.List;
 
