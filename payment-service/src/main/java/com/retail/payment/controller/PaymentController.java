@@ -1,13 +1,12 @@
 package com.retail.payment.controller;
 
-import com.retail.common.resolver.CurrentUser;
-import com.retail.payment.dto.request.PaymentRequest;
 import com.retail.payment.dto.response.PaymentResponse;
 import com.retail.payment.service.PaymentService;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,18 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
 
   private final PaymentService paymentService;
-
-  @PostMapping("/request")
-  public PaymentResponse requestPayment(@CurrentUser Long userId,@RequestBody PaymentRequest req) {
-    return paymentService.requestPayment(userId,req);
+  @GetMapping("/{orderId}")
+  public PaymentResponse getPayment(@PathVariable UUID orderId) {
+    return paymentService.getPaymentInfo(orderId);
   }
 
-  @GetMapping("/confirm")
+  @PostMapping("/confirm")
   public PaymentResponse confirmPayment(
       @RequestParam String paymentKey,
-      @RequestParam String orderId,
+      @RequestParam UUID orderId,
       @RequestParam int amount
   ) {
     return paymentService.confirmPayment(paymentKey, orderId, amount);
   }
+
 }

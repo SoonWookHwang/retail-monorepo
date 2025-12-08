@@ -18,10 +18,12 @@ public class TossPaymentClient {
 
     return webClient.post()
         .uri(props.getApiUrl() + "/confirm")
-        .headers(headers -> {
-          headers.setBasicAuth(props.getSecretKey(), "");
-        })
-        .bodyValue(new TossConfirmRequest(paymentKey, orderId, amount))
+        .headers(headers -> headers.setBasicAuth(props.getSecretKey(), ""))
+        .bodyValue(new TossConfirmRequest(
+            paymentKey,
+            orderId,     // UUID → String으로 전달
+            amount
+        ))
         .retrieve()
         .bodyToMono(TossPaymentResponse.class)
         .block();

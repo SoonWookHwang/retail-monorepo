@@ -2,8 +2,10 @@ package com.retail.order.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -13,8 +15,9 @@ import java.util.List;
 @Table(name = "orders")
 public class Order extends BaseEntity {
 
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @Id
+  @Column(columnDefinition = "BINARY(16)")
+  private UUID id;
 
   private Long userId; // 주문자
 
@@ -31,12 +34,23 @@ public class Order extends BaseEntity {
   @Builder.Default
   private List<OrderItem> items = new ArrayList<>();
 
+  @PrePersist
+  public void prePersist() {
+    if (id == null) {
+      id = UUID.randomUUID();
+    }
+  }
+
   public void addItem(OrderItem item) {
     items.add(item);
     item.setOrder(this);
   }
 
-  public void updateStatus(OrderStatus status) {
-    this.status = status;
+  public void markPaid() {
+    this.status = OrderStatus.PAID;
+  }
+
+  public void markFailed() {
+    this.status = OrderStatus.FAILED;
   }
 }
