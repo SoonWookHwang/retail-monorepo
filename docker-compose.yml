@@ -8,7 +8,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_INNODB_BUFFER_POOL_SIZE: 128M  # 메모리 절감 - 로컬 테스트환경 최적화
-    mem_limit: 512m   # MySQL 메모리 제한 - 로컬 테스트환경 최적화
+    mem_limit: 256m   # MySQL 메모리 제한 - 로컬 테스트환경 최적화
     ports:
       - '3307:3306'
     volumes:
@@ -29,7 +29,7 @@ services:
       - xpack.security.enabled=false
 #      - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - ES_JAVA_OPTS=-Xms256m -Xmx256m  # 메모리 절감 - 로컬 테스트환경 최적화
-    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 384m  # 메모리 절감 - 로컬 테스트환경 최적화
     ports:
       - "9200:9200"
     volumes:
@@ -54,39 +54,62 @@ services:
 #    ports:
 #      - "5601:5601"
   kafka:
-    image: confluentinc/cp-kafka:7.5.0
+    image: redpandadata/redpanda:v23.2.10
     container_name: retail-kafka
+    command:
+      - redpanda start
+      - --overprovisioned
+      - --smp 1
+      - --memory 256M
+      - --reserve-memory 0M
+      - --node-id 0
+      - --check=false
+      - --set redpanda.enable_sasl=false
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://kafka:9092,external://localhost:19092
+    mem_limit: 256m
     ports:
-      - "9092:9092"
-    mem_limit: 384m
-    depends_on:
-      zookeeper:
-        condition: service_healthy
-    environment:
-      KAFKA_HEAP_OPTS: "-Xms256m -Xmx256m"   # Kafka JVM 힙 제한
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      - "9092:9092"      # container 내부 통신용 (order-service, payment-service 등)
+      - "19092:19092"    # 호스트용
     healthcheck:
-      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    container_name: retail-zookeeper
-    ports:
-      - "2181:2181"
-    mem_limit: 128m
-    environment:
-      ZOOKEEPER_SERVER_JVMFLAGS: "-Xms64m -Xmx64m"  # ZK JVM 제한
-      ZOOKEEPER_CLIENT_PORT: 2181
-    healthcheck:
-      test: [ "CMD-SHELL", "echo stat | nc localhost 2181 >/dev/null 2>&1" ]
+      test: [ "CMD-SHELL", "rpk cluster info --brokers=localhost:9092 >/dev/null 2>&1" ]
       interval: 10s
       timeout: 5s
       retries: 10
+#  kafka:
+#    image: confluentinc/cp-kafka:7.5.0
+#    container_name: retail-kafka
+#    ports:
+#      - "9092:9092"
+#    mem_limit: 512m
+#    depends_on:
+#      zookeeper:
+#        condition: service_healthy
+#    environment:
+#      KAFKA_HEAP_OPTS: "-Xms256m -Xmx256m"   # Kafka JVM 힙 제한
+#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+#      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+#    healthcheck:
+#      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 20
+#
+#  zookeeper:
+#    image: confluentinc/cp-zookeeper:7.5.0
+#    container_name: retail-zookeeper
+#    ports:
+#      - "2181:2181"
+#    mem_limit: 64m
+#    environment:
+#      ZOOKEEPER_SERVER_JVMFLAGS: "-Xms32m -Xmx32m"  # ZK JVM 제한
+#      ZOOKEEPER_CLIENT_PORT: 2181
+#    healthcheck:
+#      test: [ "CMD-SHELL", "echo stat | nc localhost 2181 >/dev/null 2>&1" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 10
 
   member-service:
     build:
@@ -101,7 +124,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: 1234
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       JAVA_OPTS: "-Xms128m -Xmx256m"  # 메모리 절감 - 로컬 테스트환경 최적화
-    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 256m  # 메모리 절감 - 로컬 테스트환경 최적화
     ports:
       - "8081:8081"
 
@@ -121,7 +144,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
       JAVA_OPTS: "-Xms128m -Xmx256m"  # 메모리 절감 - 로컬 테스트환경 최적화
-    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 256m  # 메모리 절감 - 로컬 테스트환경 최적화
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
       interval: 10s
@@ -136,8 +159,8 @@ services:
       context: ./order-service
     container_name: retail-order
     depends_on:
-      zookeeper:
-        condition: service_healthy
+#      zookeeper:
+#        condition: service_healthy
       kafka:
         condition: service_healthy
       product-service:
@@ -151,7 +174,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SERVICE_PRODUCT_URL: http://product-service:8082
       JAVA_OPTS: "-Xms128m -Xmx256m"  # 메모리 절감 - 로컬 테스트환경 최적화
-    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 256m  # 메모리 절감 - 로컬 테스트환경 최적화
     ports:
       - "8083:8083"
 
@@ -160,8 +183,8 @@ services:
       context: ./payment-service
     container_name: retail-payment
     depends_on:
-      zookeeper:
-        condition: service_healthy
+#      zookeeper:
+#        condition: service_healthy
       kafka:
         condition: service_healthy
       mysql:
@@ -172,7 +195,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: 1234
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       JAVA_OPTS: "-Xms128m -Xmx256m"  # 메모리 절감 - 로컬 테스트환경 최적화
-    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 256m  # 메모리 절감 - 로컬 테스트환경 최적화
     ports:
       - "8084:8084"
 
@@ -185,6 +208,6 @@ services:
       - product-service
     environment:
       JAVA_OPTS: "-Xms128m -Xmx256m"  # 메모리 절감 - 로컬 테스트환경 최적화
-    mem_limit: 512m  # 메모리 절감 - 로컬 테스트환경 최적화
+    mem_limit: 256m  # 메모리 절감 - 로컬 테스트환경 최적화
     ports:
       - "8080:8080"
