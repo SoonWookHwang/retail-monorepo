@@ -3,6 +3,10 @@ spring:
     active: local
   application:
     name: product-service
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB
 
 management:
   endpoints:
@@ -12,8 +16,3 @@ management:
   endpoint:
     health:
       show-details: always
-
-
-
-
-

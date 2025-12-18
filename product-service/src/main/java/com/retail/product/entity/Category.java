@@ -25,5 +25,6 @@ public class Category {
 
   // 하위 카테고리들
   @OneToMany(mappedBy = "parent")
+  @Builder.Default
   private List<Category> children = new ArrayList<>();
 }
