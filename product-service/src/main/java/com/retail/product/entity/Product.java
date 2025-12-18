@@ -55,4 +55,7 @@ public class Product extends BaseEntity {
     this.stock = stock;
     stock.setProduct(this);
   }
+  public void setCategory(Category category){
+    this.category = category;
+  }
 }

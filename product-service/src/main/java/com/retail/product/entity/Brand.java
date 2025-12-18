@@ -19,5 +19,6 @@ public class Brand {
   private String name;
 
   @OneToMany(mappedBy = "brand")
+  @Builder.Default
   private List<Product> products = new ArrayList<>();
 }

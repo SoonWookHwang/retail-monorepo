@@ -49,7 +49,6 @@ public class ProductSearchService {
                   .fields("name", "description")
               )
           ), ProductDocument.class);
-
       return response.hits().hits().stream()
           .map(Hit::source)
           .filter(Objects::nonNull)
